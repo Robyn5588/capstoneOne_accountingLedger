@@ -1,7 +1,9 @@
 package com.ps;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class Main {
     public static void main(String[] args) {
 
         loadStatement();
+
         int mainMenuCommand;
 
         do{
@@ -23,7 +26,7 @@ public class Main {
             System.out.println("3) Ledger");
             System.out.println("0) Exit ");
 
-            System.out.print("What would you like to do?");
+            System.out.print("What would you like to do? ");
             mainMenuCommand = scanner.nextInt();
 
             switch (mainMenuCommand){
@@ -41,10 +44,7 @@ public class Main {
                     break;
                 default:
                     System.out.println("Invalid Input, Try Again.");
-
             }
-
-
         }while(mainMenuCommand != 0);
 
 
@@ -58,13 +58,13 @@ public class Main {
 
             while ((input = bufferedReader.readLine()) != null){
                 String[] fields = input.split("\\|");
-                LocalDate date =  LocalDate.parse(fields[0]);
-                LocalTime time =  LocalTime.parse(fields[1]);
+                LocalDate dateStamp = LocalDate.parse(fields[0]);
+                LocalTime timeStamp =  LocalTime.parse(fields[1]);
                 String description = fields[2];
                 String vendor = fields[3];
                 double amount = Double.parseDouble(fields[4]);
 
-                Transaction transaction = new Transaction(date, time, description,vendor,amount);
+                Transaction transaction = new Transaction(dateStamp, timeStamp, description,vendor,amount);
                 statement.add(transaction);
             }
             bufferedReader.close();
@@ -74,9 +74,64 @@ public class Main {
     }
 
     private static void handleAddDeposit() {
+        LocalDate dateDeposit = LocalDate.now();
+        LocalTime timeDeposit = LocalTime.now();
+
+        scanner.nextLine();
+        System.out.print("Enter Description: ");
+        String writeDescription = scanner.nextLine();
+
+        System.out.print("Enter Vendor: ");
+        String writeVendor = scanner.nextLine();
+
+        System.out.print("Enter Amount: ");
+        double writeAmount = scanner.nextDouble();
+        writeAmount = Math.abs(writeAmount);
+
+
+        try{
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true));
+
+
+            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",dateDeposit,timeDeposit, writeDescription,writeVendor, writeAmount);
+            bufferedWriter.write(formattedTransaction);
+
+
+            bufferedWriter.close();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     private static void handleMakePayment() {
+
+        LocalDate datePayment = LocalDate.now();
+        LocalTime timePayment = LocalTime.now();
+
+        scanner.nextLine();
+        System.out.print("Enter Description: ");
+        String writeDescription = scanner.nextLine();
+
+        System.out.print("Enter Vendor: ");
+        String writeVendor = scanner.nextLine();
+
+        System.out.print("Enter Amount: ");
+        double writeAmount = scanner.nextDouble();
+        writeAmount = -Math.abs(writeAmount);
+
+        try{
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv",true));
+
+
+                String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",datePayment,timePayment, writeDescription,writeVendor, writeAmount);
+                bufferedWriter.write(formattedTransaction);
+
+
+            bufferedWriter.close();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     private static void handleLedger() {
@@ -90,7 +145,7 @@ public class Main {
         System.out.println("4) Reports");
         System.out.println("0) Back to Home ");
 
-        System.out.print("What would you like to do?");
+        System.out.print("What would you like to do? ");
         ledgerMenuCommand = scanner.nextInt();
 
         switch (ledgerMenuCommand){
@@ -136,7 +191,7 @@ public class Main {
             System.out.println("5) Search by Vendor");
             System.out.println("0) Back to Ledger ");
 
-            System.out.print("What would you like to do?");
+            System.out.print("What would you like to do? ");
             reportsMenuCommand = scanner.nextInt();
 
             switch (reportsMenuCommand){
@@ -156,7 +211,7 @@ public class Main {
                     handleSearchByVendor();
                     break;
                 case 0:
-                    System.out.println("Going Back to Home");
+                    System.out.println("Going Back to Ledger");
                     break;
                 default:
                     System.out.println("Invalid Input, Try Again.");

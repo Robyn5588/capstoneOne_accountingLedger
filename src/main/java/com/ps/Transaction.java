@@ -4,34 +4,34 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Transaction {
-    private LocalDate date;
-    private LocalTime time;
+    private LocalDate dateStamp;
+    private LocalTime timeStamp;
     private String description;
     private String vendor;
     private double amount;
 
-    public Transaction(LocalDate date, LocalTime time, String description, String vendor, double amount) {
-        this.date = date;
-        this.time = time;
+    public Transaction(LocalDate dateStamp, LocalTime timeStamp, String description, String vendor, double amount) {
+        this.dateStamp = dateStamp;
+        this.timeStamp = timeStamp;
         this.description = description;
         this.vendor = vendor;
         this.amount = amount;
     }
 
     public LocalDate getDate() {
-        return date;
+        return dateStamp;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setDate(LocalDate dateStamp) {
+        this.dateStamp = dateStamp;
     }
 
     public LocalTime getTime() {
-        return time;
+        return timeStamp;
     }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
+    public void setTime(LocalTime timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getDescription() {
@@ -61,8 +61,8 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "date='" + date + '\'' +
-                ", time='" + time + '\'' +
+                "date='" + dateStamp + '\'' +
+                ", time='" + timeStamp + '\'' +
                 ", description='" + description + '\'' +
                 ", vendor='" + vendor + '\'' +
                 ", amount=" + amount +
