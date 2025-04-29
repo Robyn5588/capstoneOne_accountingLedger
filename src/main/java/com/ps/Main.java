@@ -11,8 +11,11 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 public class Main {
-    static Scanner scanner = new Scanner(System.in);
+    static Scanner scannerDigit = new Scanner(System.in);
+    static Scanner scannerLine = new Scanner(System.in);
     static ArrayList<Transaction> statement = new ArrayList<>();
+    static LocalDate dateStamp = LocalDate.now();
+    static LocalTime timeStamp = LocalTime.now();
 
     public static void main(String[] args) {
 
@@ -28,7 +31,7 @@ public class Main {
             System.out.println("0) Exit ");
 
             System.out.print("What would you like to do? ");
-            mainMenuCommand = scanner.nextInt();
+            mainMenuCommand = scannerDigit.nextInt();
 
             switch (mainMenuCommand){
                 case 1:
@@ -47,8 +50,6 @@ public class Main {
                     System.out.println("Invalid Input, Try Again.");
             }
         }while(mainMenuCommand != 0);
-
-
     }
 
     private static void loadStatement(){
@@ -59,8 +60,8 @@ public class Main {
 
             while ((input = bufferedReader.readLine()) != null){
                 String[] fields = input.split("\\|");
-                LocalDate dateStamp = LocalDate.parse(fields[0]);
-                LocalTime timeStamp =  LocalTime.parse(fields[1]);
+                dateStamp = LocalDate.parse(fields[0]);
+                timeStamp =  LocalTime.parse(fields[1]);
                 String description = fields[2];
                 String vendor = fields[3];
                 double amount = Double.parseDouble(fields[4]);
@@ -75,25 +76,22 @@ public class Main {
     }
 
     private static void handleAddDeposit() {
-        LocalDate dateDeposit = LocalDate.now();
-        LocalTime timeDeposit = LocalTime.now();
 
-        scanner.nextLine();
         System.out.print("Enter Description: ");
-        String writeDescription = scanner.nextLine();
+        String writeDescription = scannerLine.nextLine();
 
         System.out.print("Enter Vendor: ");
-        String writeVendor = scanner.nextLine();
+        String writeVendor = scannerLine.nextLine();
 
         System.out.print("Enter Amount: ");
-        double writeAmount = scanner.nextDouble();
+        double writeAmount = scannerDigit.nextDouble();
         writeAmount = Math.abs(writeAmount);
 
 
         try{
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true));
 
-            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",dateDeposit,timeDeposit, writeDescription,writeVendor, writeAmount);
+            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
             bufferedWriter.write(formattedTransaction);
 
             bufferedWriter.close();
@@ -105,24 +103,20 @@ public class Main {
 
     private static void handleMakePayment() {
 
-        LocalDate datePayment = LocalDate.now();
-        LocalTime timePayment = LocalTime.now();
-
-        scanner.nextLine();
         System.out.print("Enter Description: ");
-        String writeDescription = scanner.nextLine();
+        String writeDescription = scannerLine.nextLine();
 
         System.out.print("Enter Vendor: ");
-        String writeVendor = scanner.nextLine();
+        String writeVendor = scannerLine.nextLine();
 
         System.out.print("Enter Amount: ");
-        double writeAmount = scanner.nextDouble();
+        double writeAmount = scannerDigit.nextDouble();
         writeAmount = -Math.abs(writeAmount);
 
         try{
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv",true));
 
-                String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",datePayment,timePayment, writeDescription,writeVendor, writeAmount);
+                String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
                 bufferedWriter.write(formattedTransaction);
 
             bufferedWriter.close();
@@ -143,7 +137,7 @@ public class Main {
         System.out.println("0) Back to Home ");
 
         System.out.print("What would you like to do? ");
-        ledgerMenuCommand = scanner.nextInt();
+        ledgerMenuCommand = scannerDigit.nextInt();
 
         switch (ledgerMenuCommand){
             case 1:
@@ -170,8 +164,9 @@ public class Main {
 
     private static void handleAll() {
 
-        statement.sort(Comparator.comparing(Transaction::getDate).reversed());
-        statement.sort(Comparator.comparing(Transaction::getTime).reversed());
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
+
 
         for(Transaction transaction: statement){
             System.out.println(transaction); //WIP printf
@@ -180,8 +175,8 @@ public class Main {
 
     private static void handleDeposits() {
 
-        statement.sort(Comparator.comparing(Transaction::getDate).reversed());
-        statement.sort(Comparator.comparing(Transaction::getTime).reversed());
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
 
         for(Transaction transaction: statement){
             if(transaction.getAmount() > 0){
@@ -193,8 +188,8 @@ public class Main {
 
     private static void handlePayments() {
 
-        statement.sort(Comparator.comparing(Transaction::getDate).reversed());
-        statement.sort(Comparator.comparing(Transaction::getTime).reversed());
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
 
         for(Transaction transaction: statement){
             if(transaction.getAmount() < 0){
@@ -216,7 +211,7 @@ public class Main {
             System.out.println("0) Back to Ledger ");
 
             System.out.print("What would you like to do? ");
-            reportsMenuCommand = scanner.nextInt();
+            reportsMenuCommand = scannerDigit.nextInt();
 
             switch (reportsMenuCommand){
                 case 1:
@@ -246,18 +241,77 @@ public class Main {
     }
 
     private static void handleMonthToDate() {
+
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
+
+        for(Transaction transaction: statement){
+            if(dateStamp.getYear() == transaction.getDate().getYear()){
+                if(dateStamp.getMonth().equals(transaction.getDate().getMonth())){
+                    System.out.println(transaction); //WIP printf
+                }
+            }
+        }
     }
 
     private static void handlePreviousMonth() {
+
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
+
+        LocalDate previousMonth = dateStamp.minusMonths(1);
+
+        for(Transaction transaction: statement){
+            if(dateStamp.getYear() == transaction.getDate().getYear()){
+                if(previousMonth.getMonth().equals(transaction.getDate().getMonth())){
+                    System.out.println(transaction); //WIP printf
+                }
+            }
+        }
     }
 
     private static void handleYearToDate() {
+
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
+
+        for(Transaction transaction: statement){
+            if(dateStamp.getYear() == transaction.getDate().getYear()){
+                System.out.println(transaction); //WIP printf
+            }
+
+        }
     }
 
     private static void handlePreviousYear() {
+
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
+
+        LocalDate previousYear = dateStamp.minusYears(1);
+
+        for(Transaction transaction: statement){
+            if(previousYear.getYear() == transaction.getDate().getYear()){
+                System.out.println(transaction); //WIP printf
+            }
+
+        }
     }
 
     private static void handleSearchByVendor() {
+
+        System.out.print("Please enter Vendor Name: ");
+        String vendorInput = scannerLine.nextLine();
+
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
+
+        for(Transaction transaction: statement){
+            if(vendorInput.equalsIgnoreCase(transaction.getVendor())){
+                System.out.println(transaction); //WIP printf
+            }
+
+        }
     }
 
 }
