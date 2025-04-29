@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Main {
@@ -92,10 +93,8 @@ public class Main {
         try{
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true));
 
-
             String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",dateDeposit,timeDeposit, writeDescription,writeVendor, writeAmount);
             bufferedWriter.write(formattedTransaction);
-
 
             bufferedWriter.close();
         }catch (Exception e){
@@ -123,10 +122,8 @@ public class Main {
         try{
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv",true));
 
-
                 String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",datePayment,timePayment, writeDescription,writeVendor, writeAmount);
                 bufferedWriter.write(formattedTransaction);
-
 
             bufferedWriter.close();
         }catch (Exception e){
@@ -172,12 +169,39 @@ public class Main {
     }
 
     private static void handleAll() {
+
+        statement.sort(Comparator.comparing(Transaction::getDate).reversed());
+        statement.sort(Comparator.comparing(Transaction::getTime).reversed());
+
+        for(Transaction transaction: statement){
+            System.out.println(transaction); //WIP printf
+        }
     }
 
     private static void handleDeposits() {
+
+        statement.sort(Comparator.comparing(Transaction::getDate).reversed());
+        statement.sort(Comparator.comparing(Transaction::getTime).reversed());
+
+        for(Transaction transaction: statement){
+            if(transaction.getAmount() > 0){
+                System.out.println(transaction); //WIP printf
+            }
+
+        }
     }
 
     private static void handlePayments() {
+
+        statement.sort(Comparator.comparing(Transaction::getDate).reversed());
+        statement.sort(Comparator.comparing(Transaction::getTime).reversed());
+
+        for(Transaction transaction: statement){
+            if(transaction.getAmount() < 0){
+                System.out.println(transaction); //WIP printf
+            }
+
+        }
     }
 
     private static void handleReports() {
