@@ -23,7 +23,7 @@ public class Main {
         int mainMenuCommand;
 
         do{
-            System.out.println("Accounting Ledger Application Home");
+            System.out.println("\nAccounting Ledger Application Home");
             System.out.println("1) Add Deposit");
             System.out.println("2) Make Payment ");
             System.out.println("3) Ledger");
@@ -68,7 +68,7 @@ public class Main {
                 Transaction transaction = new Transaction(date, time, description,vendor,amount);
                 statement.add(transaction);
             }
-//            bufferedReader.close();
+            bufferedReader.close();
         }catch(Exception e){
             throw new RuntimeException(e);
         }
@@ -76,61 +76,120 @@ public class Main {
 
     private static void handleAddDeposit() {
 
-        System.out.print("Enter Description: ");
-        String writeDescription = scannerLine.nextLine();
+        String addDepositCommand;
+        String confirmationInput;
 
-        System.out.print("Enter Vendor: ");
-        String writeVendor = scannerLine.nextLine();
+        do{
+            System.out.print("\nWould you like to make a Deposit? (Y/N) ");
+            addDepositCommand = scannerLine.nextLine().toUpperCase();
 
-        System.out.print("Enter Amount: ");
-        double writeAmount = scannerDigit.nextDouble();
-        writeAmount = Math.abs(writeAmount); // Explain
+            switch (addDepositCommand){
+                case "Y":
+                    System.out.print("\nEnter Description: ");
+                    String writeDescription = scannerLine.nextLine();
 
+                    System.out.print("Enter Vendor: ");
+                    String writeVendor = scannerLine.nextLine();
 
-        try{
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true)); // Explain
+                    System.out.print("Enter Amount: ");
+                    double writeAmount = scannerDigit.nextDouble();
+                    writeAmount = Math.abs(writeAmount);
 
-            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
-                    ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
-            bufferedWriter.write(formattedTransaction);
+                    System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+                    System.out.println("----------------------------------------------------------------------------------");
+                    System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n",dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
 
-            bufferedWriter.close();
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+                    System.out.print("\nIs the Information Above Correct? (Yes/No) ");
+                    confirmationInput = scannerLine.nextLine();
+                    if(confirmationInput.equalsIgnoreCase("yes")){
+                        try{
+                            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true)); // Explain
+
+                            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
+                                    ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
+                            bufferedWriter.write(formattedTransaction);
+
+                            bufferedWriter.close();
+                        }catch (Exception e){
+                            throw new RuntimeException(e);
+                        }
+                    } else if (confirmationInput.equalsIgnoreCase("no")) {
+                        System.out.println("Please Try Again");
+
+                    }else{
+                        System.out.println("Invalid Input, Try again");
+                    }
+                    break;
+                case "N":
+                    System.out.println("Going Back to home");
+                    break;
+                default:
+                    System.out.println("Invalid option, Try Again");
+            }
+        } while (!addDepositCommand.equalsIgnoreCase("N"));
 
     }
 
     private static void handleMakePayment() {
 
-        System.out.print("Enter Description: ");
-        String writeDescription = scannerLine.nextLine();
+        String makePaymentCommand;
+        String confirmationInput;
 
-        System.out.print("Enter Vendor: ");
-        String writeVendor = scannerLine.nextLine();
+        do{
+            System.out.print("\nWould you like to make a Payment? (Y/N) ");
+            makePaymentCommand = scannerLine.nextLine().toUpperCase();
 
-        System.out.print("Enter Amount: ");
-        double writeAmount = scannerDigit.nextDouble();
-        writeAmount = -Math.abs(writeAmount);
+            switch (makePaymentCommand){
+                case "Y":
+                    System.out.print("\nEnter Description: ");
+                    String writeDescription = scannerLine.nextLine();
 
-        try{
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv",true));
+                    System.out.print("Enter Vendor: ");
+                    String writeVendor = scannerLine.nextLine();
 
-                String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
-                        ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
-                bufferedWriter.write(formattedTransaction);
+                    System.out.print("Enter Amount: ");
+                    double writeAmount = scannerDigit.nextDouble();
+                    writeAmount = -Math.abs(writeAmount);
 
-            bufferedWriter.close();
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+                    System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+                    System.out.println("----------------------------------------------------------------------------------");
+                    System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n",dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
+
+                    System.out.print("\nIs the Information Above Correct? (Yes/No) ");
+                    confirmationInput = scannerLine.nextLine();
+                    if(confirmationInput.equalsIgnoreCase("yes")){
+                        try{
+                            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true)); // Explain
+
+                            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
+                                    ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
+                            bufferedWriter.write(formattedTransaction);
+
+                            bufferedWriter.close();
+                        }catch (Exception e){
+                            throw new RuntimeException(e);
+                        }
+                    } else if (confirmationInput.equalsIgnoreCase("no")) {
+                        System.out.println("Please Try Again");
+
+                    }else{
+                        System.out.println("Invalid Input, Try again");
+                    }
+                    break;
+                case "N":
+                    System.out.println("Going Back to home");
+                    break;
+                default:
+                    System.out.println("Invalid option, Try Again");
+            }
+        } while (!makePaymentCommand.equalsIgnoreCase("N"));
     }
 
     private static void handleLedger() {
 
         int ledgerMenuCommand;
         do{
-            System.out.println("Ledger Menu");
+            System.out.println("\nLedger Menu");
             System.out.println("1) All");
             System.out.println("2) Deposits ");
             System.out.println("3) Payments");
@@ -167,7 +226,7 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate) // Explain this code
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         for(Transaction transaction: statement){
@@ -181,7 +240,7 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         for(Transaction transaction: statement){
@@ -197,7 +256,7 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         for(Transaction transaction: statement){
@@ -212,7 +271,7 @@ public class Main {
 
         int reportsMenuCommand;
         do{
-            System.out.println("Reports Menu");
+            System.out.println("\nReports Menu");
             System.out.println("1) Month To Date");
             System.out.println("2) Previous Month");
             System.out.println("3) Year To Date");
@@ -253,7 +312,7 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         for(Transaction transaction: statement){
@@ -271,7 +330,7 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         LocalDate previousMonth = dateStamp.minusMonths(1);
@@ -291,7 +350,7 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         for(Transaction transaction: statement){
@@ -307,7 +366,7 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         LocalDate previousYear = dateStamp.minusYears(1);
@@ -322,13 +381,13 @@ public class Main {
 
     private static void handleSearchByVendor() {
 
-        System.out.print("Please enter Vendor Name: ");
+        System.out.print("\nPlease enter Vendor Name: ");
         String vendorInput = scannerLine.nextLine();
 
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
-        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
         System.out.println("----------------------------------------------------------------------------------");
 
         for(Transaction transaction: statement){
