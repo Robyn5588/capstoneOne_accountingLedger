@@ -20,7 +20,6 @@ public class Main {
     public static void main(String[] args) {
 
         loadStatement();
-
         int mainMenuCommand;
 
         do{
@@ -60,16 +59,16 @@ public class Main {
 
             while ((input = bufferedReader.readLine()) != null){
                 String[] fields = input.split("\\|");
-                dateStamp = LocalDate.parse(fields[0]);
-                timeStamp =  LocalTime.parse(fields[1]);
+                LocalDate date = LocalDate.parse(fields[0]);
+                LocalTime time =  LocalTime.parse(fields[1]);
                 String description = fields[2];
                 String vendor = fields[3];
                 double amount = Double.parseDouble(fields[4]);
 
-                Transaction transaction = new Transaction(dateStamp, timeStamp, description,vendor,amount);
+                Transaction transaction = new Transaction(date, time, description,vendor,amount);
                 statement.add(transaction);
             }
-            bufferedReader.close();
+//            bufferedReader.close();
         }catch(Exception e){
             throw new RuntimeException(e);
         }
@@ -85,13 +84,14 @@ public class Main {
 
         System.out.print("Enter Amount: ");
         double writeAmount = scannerDigit.nextDouble();
-        writeAmount = Math.abs(writeAmount);
+        writeAmount = Math.abs(writeAmount); // Explain
 
 
         try{
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true)); // Explain
 
-            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
+            String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
+                    ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
             bufferedWriter.write(formattedTransaction);
 
             bufferedWriter.close();
@@ -116,7 +116,8 @@ public class Main {
         try{
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv",true));
 
-                String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n",dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
+                String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
+                        ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
                 bufferedWriter.write(formattedTransaction);
 
             bufferedWriter.close();
@@ -129,47 +130,49 @@ public class Main {
 
         int ledgerMenuCommand;
         do{
-        System.out.println("Ledger Menu");
-        System.out.println("1) All");
-        System.out.println("2) Deposits ");
-        System.out.println("3) Payments");
-        System.out.println("4) Reports");
-        System.out.println("0) Back to Home ");
+            System.out.println("Ledger Menu");
+            System.out.println("1) All");
+            System.out.println("2) Deposits ");
+            System.out.println("3) Payments");
+            System.out.println("4) Reports");
+            System.out.println("0) Back to Home ");
 
-        System.out.print("What would you like to do? ");
-        ledgerMenuCommand = scannerDigit.nextInt();
+            System.out.print("What would you like to do? ");
+            ledgerMenuCommand = scannerDigit.nextInt();
 
-        switch (ledgerMenuCommand){
-            case 1:
-                handleAll();
-                break;
-            case 2:
-                handleDeposits();
-                break;
-            case 3:
-                handlePayments();
-                break;
-            case 4:
-                handleReports();
-                break;
-            case 0:
-                System.out.println("Going Back to Home");
-                break;
-            default:
-                System.out.println("Invalid Input, Try Again.");
-        }
-
-    }while(ledgerMenuCommand != 0);
+            switch (ledgerMenuCommand){
+                case 1:
+                    handleAll();
+                    break;
+                case 2:
+                    handleDeposits();
+                    break;
+                case 3:
+                    handlePayments();
+                    break;
+                case 4:
+                    handleReports();
+                    break;
+                case 0:
+                    System.out.println("Going Back to Home");
+                    break;
+                default:
+                    System.out.println("Invalid Input, Try Again.");
+            }
+        }while(ledgerMenuCommand != 0);
     }
 
     private static void handleAll() {
 
-        statement.sort(Comparator.comparing(Transaction::getDate)
+        statement.sort(Comparator.comparing(Transaction::getDate) // Explain this code
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
 
         for(Transaction transaction: statement){
-            System.out.println(transaction); //WIP printf
+            System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                    ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
         }
     }
 
@@ -178,11 +181,14 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
         for(Transaction transaction: statement){
             if(transaction.getAmount() > 0){
-                System.out.println(transaction); //WIP printf
+                System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                        ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
             }
-
         }
     }
 
@@ -191,15 +197,19 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
         for(Transaction transaction: statement){
             if(transaction.getAmount() < 0){
-                System.out.println(transaction); //WIP printf
+                System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                        ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
             }
-
         }
     }
 
     private static void handleReports() {
+
         int reportsMenuCommand;
         do{
             System.out.println("Reports Menu");
@@ -235,9 +245,7 @@ public class Main {
                 default:
                     System.out.println("Invalid Input, Try Again.");
             }
-
         }while(reportsMenuCommand != 0);
-
     }
 
     private static void handleMonthToDate() {
@@ -245,10 +253,14 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
         for(Transaction transaction: statement){
             if(dateStamp.getYear() == transaction.getDate().getYear()){
                 if(dateStamp.getMonth().equals(transaction.getDate().getMonth())){
-                    System.out.println(transaction); //WIP printf
+                    System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                            ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
                 }
             }
         }
@@ -259,12 +271,16 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
         LocalDate previousMonth = dateStamp.minusMonths(1);
 
         for(Transaction transaction: statement){
             if(dateStamp.getYear() == transaction.getDate().getYear()){
                 if(previousMonth.getMonth().equals(transaction.getDate().getMonth())){
-                    System.out.println(transaction); //WIP printf
+                    System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                            ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
                 }
             }
         }
@@ -275,11 +291,14 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
         for(Transaction transaction: statement){
             if(dateStamp.getYear() == transaction.getDate().getYear()){
-                System.out.println(transaction); //WIP printf
+                System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                        ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
             }
-
         }
     }
 
@@ -288,13 +307,16 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
         LocalDate previousYear = dateStamp.minusYears(1);
 
         for(Transaction transaction: statement){
             if(previousYear.getYear() == transaction.getDate().getYear()){
-                System.out.println(transaction); //WIP printf
+                System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                        ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
             }
-
         }
     }
 
@@ -306,11 +328,14 @@ public class Main {
         statement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
+        System.out.printf("%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
         for(Transaction transaction: statement){
             if(vendorInput.equalsIgnoreCase(transaction.getVendor())){
-                System.out.println(transaction); //WIP printf
+                System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                        ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
             }
-
         }
     }
 
