@@ -127,7 +127,6 @@ public class Main {
                     System.out.println("Invalid option, Try Again");
             }
         } while (!addDepositCommand.equalsIgnoreCase("N"));
-
     }
 
     private static void handleMakePayment() {
@@ -159,7 +158,7 @@ public class Main {
                     confirmationInput = scannerLine.nextLine();
                     if(confirmationInput.equalsIgnoreCase("yes")){
                         try{
-                            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true)); // Explain
+                            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true));
 
                             String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
                                     ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
@@ -277,6 +276,7 @@ public class Main {
             System.out.println("3) Year To Date");
             System.out.println("4) Previous Year");
             System.out.println("5) Search by Vendor");
+            System.out.println("6) Custom Search");
             System.out.println("0) Back to Ledger ");
 
             System.out.print("What would you like to do? ");
@@ -297,6 +297,9 @@ public class Main {
                     break;
                 case 5:
                     handleSearchByVendor();
+                    break;
+                case 6:
+                    handleCustomSearch();
                     break;
                 case 0:
                     System.out.println("Going Back to Ledger");
@@ -396,6 +399,73 @@ public class Main {
                         ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
             }
         }
+    }
+
+    private static void handleCustomSearch() {
+
+        System.out.print("\nPlease enter Start Date (YYYY-MM-DD): ");
+        String startDateInput = scannerLine.nextLine();
+
+        System.out.print("Please enter End Date (YYYY-MM-DD): ");
+        String endDateInput = scannerLine.nextLine();
+
+        System.out.print("Please enter Description: ");
+        String descriptionInput = scannerLine.nextLine();
+
+        System.out.print("Please enter Vendor: ");
+        String vendorInput = scannerLine.nextLine();
+
+        System.out.print("Please enter Amount: ");
+        String amountInput = scannerLine.nextLine();
+
+        LocalDate startDate;
+        if(startDateInput.isEmpty()){
+            startDate = null;
+        }else{
+            startDate = LocalDate.parse(startDateInput);
+        }
+
+        LocalDate endDate;
+        if(endDateInput.isEmpty()){
+            endDate = null;
+        }else{
+            endDate = LocalDate.parse(endDateInput);
+        }
+
+        statement.sort(Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getTime).reversed());
+
+        System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
+        System.out.println("----------------------------------------------------------------------------------");
+
+        ArrayList<Transaction> filter = new ArrayList<>();
+
+        for(Transaction transaction: statement){
+
+            LocalDate transactionDate = transaction.getDate();
+            String transactionAmount = String.valueOf(transaction.getAmount());
+
+           if((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate))
+                   || (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate))){
+               if(descriptionInput.equalsIgnoreCase(transaction.getDescription()) ||
+               vendorInput.equalsIgnoreCase(transaction.getVendor()) || amountInput.equalsIgnoreCase(transactionAmount)){
+
+                   filter.add(transaction);
+
+               }else if(descriptionInput.isEmpty() || vendorInput.isEmpty() || amountInput.isEmpty() ) continue;
+               else continue;
+
+           } else if (startDateInput.isEmpty() || endDateInput.isEmpty()) continue;
+           else continue;
+        }
+
+        for (int i = 0; i < filter.size(); i++) {
+
+            System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
+                    ,filter.get(i).getDate(),filter.get(i).getTime(),filter.get(i).getDescription(),filter.get(i).getVendor(),filter.get(i).getAmount());
+
+        }
+
     }
 
 }
