@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class Main {
     static Scanner scannerDigit = new Scanner(System.in);
     static Scanner scannerLine = new Scanner(System.in);
-    static ArrayList<Transaction> statement = new ArrayList<>();
+    static ArrayList<Transaction> bankStatement = new ArrayList<>();
     static LocalDate dateStamp = LocalDate.now();
     static LocalTime timeStamp = LocalTime.now();
 
@@ -53,7 +53,7 @@ public class Main {
 
     public static void sortAndFormat(){
 
-        statement.sort(Comparator.comparing(Transaction::getDate)
+        bankStatement.sort(Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getTime).reversed());
 
         System.out.printf("\n%-15s %-15s %-25s %-15s %-10s%n", "Date", "Time", "Description","Vendor","Amount");
@@ -75,7 +75,7 @@ public class Main {
                 double amount = Double.parseDouble(fields[4]);
 
                 Transaction transaction = new Transaction(date, time, description,vendor,amount);
-                statement.add(transaction);
+                bankStatement.add(transaction);
             }
             bufferedReader.close();
         }catch(Exception e){
@@ -111,19 +111,21 @@ public class Main {
                     confirmationInput = scannerLine.nextLine().trim();
                     if(confirmationInput.equalsIgnoreCase("yes")){
                         try{
-                            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true)); // Explain
+                            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("transactions.csv", true));
 
                             String formattedTransaction = String.format("%tF|%tT|%s|%s|%.2f\n"
                                     ,dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
                             bufferedWriter.write(formattedTransaction);
 
                             Transaction transaction = new Transaction(dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
-                            statement.add(transaction);
+                            bankStatement.add(transaction);
 
                             bufferedWriter.close();
                         }catch (Exception e){
                             throw new RuntimeException(e);
                         }
+                        System.out.println("Deposit has Been Made.");
+
                     } else if (confirmationInput.equalsIgnoreCase("no")) {
                         System.out.println("Please Try Again");
 
@@ -175,12 +177,14 @@ public class Main {
                             bufferedWriter.write(formattedTransaction);
 
                             Transaction transaction = new Transaction(dateStamp,timeStamp, writeDescription,writeVendor, writeAmount);
-                            statement.add(transaction);
+                            bankStatement.add(transaction);
 
                             bufferedWriter.close();
                         }catch (Exception e){
                             throw new RuntimeException(e);
                         }
+                        System.out.println("Payment has Been Made.");
+
                     } else if (confirmationInput.equalsIgnoreCase("no")) {
                         System.out.println("Please Try Again");
 
@@ -237,7 +241,7 @@ public class Main {
 
         sortAndFormat();
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
                     ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
         }
@@ -247,7 +251,7 @@ public class Main {
 
         sortAndFormat();
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             if(transaction.getAmount() > 0){
                 System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
                         ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
@@ -259,7 +263,7 @@ public class Main {
 
         sortAndFormat();
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             if(transaction.getAmount() < 0){
                 System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
                         ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
@@ -315,7 +319,7 @@ public class Main {
 
         sortAndFormat();
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             if(dateStamp.getYear() == transaction.getDate().getYear()){
                 if(dateStamp.getMonth().equals(transaction.getDate().getMonth())){
                     System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
@@ -331,7 +335,7 @@ public class Main {
 
         LocalDate previousMonth = dateStamp.minusMonths(1);
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             if(dateStamp.getYear() == transaction.getDate().getYear()){
                 if(previousMonth.getMonth().equals(transaction.getDate().getMonth())){
                     System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
@@ -345,7 +349,7 @@ public class Main {
 
         sortAndFormat();
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             if(dateStamp.getYear() == transaction.getDate().getYear()){
                 System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
                         ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
@@ -359,7 +363,7 @@ public class Main {
 
         LocalDate previousYear = dateStamp.minusYears(1);
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             if(previousYear.getYear() == transaction.getDate().getYear()){
                 System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
                         ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
@@ -374,7 +378,7 @@ public class Main {
 
         sortAndFormat();
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
             if(vendorInput.equalsIgnoreCase(transaction.getVendor())){
                 System.out.printf("%-15tF %-15tT %-25s %-15s %-10.2f%n"
                         ,transaction.getDate(),transaction.getTime(),transaction.getDescription(),transaction.getVendor(),transaction.getAmount());
@@ -425,7 +429,7 @@ public class Main {
 
         ArrayList<Transaction> filter = new ArrayList<>();
 
-        for(Transaction transaction: statement){
+        for(Transaction transaction: bankStatement){
 
             LocalDate transactionDate = transaction.getDate();
 
